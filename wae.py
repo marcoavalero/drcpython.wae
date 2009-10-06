@@ -69,25 +69,8 @@ def p_waestart_waest(p):
     print p[1]
 
 def p_wae_group(p):
-    'wae : LBRACKET wae RBRACKET'
+    'wae : LBRACKET waex RBRACKET'
     p[0] = p[2]
-
-def p_wae_assign(p):
-    'wae : WITH assign wae'
-    p[0] = p[3]
-
-def p_assign(p):
-    'assign : LBRACKET setid RBRACKET'
-    
-def p_setid_set(p):
-    'setid : ID wae'
-    ids[p[1]] = p[2]
-    
-def p_wae_op(p):
-    ''' wae : PLUS wae wae 
-            | MINUS wae wae'''
-    if p[1] == '+' : p[0] = p[2] + p[3]
-    if p[1] == '-' : p[0] = p[2] - p[3]
 
 def p_wae_number(p):
     'wae : NUMBER'
@@ -99,7 +82,30 @@ def p_wae_id(p):
         p[0] = ids[p[1]]
     except LookupError:
         print "Semantic Error '%s' undefined" % p[1]
-        p[0] = 0
+
+def p_waex_assign(p):
+    'waex : WITH assign wae'
+    p[0] = p[3]
+
+def p_assign(p):
+    'assign : LBRACKET setid RBRACKET'
+    
+def p_setid_set(p):
+    'setid : ID wae'
+    ids[p[1]] = p[2]
+    
+def p_waex_op(p):
+    ''' waex : PLUS wae wae 
+            | MINUS wae wae'''
+    try:
+        if p[1] == '+' : p[0] = p[2] + p[3]
+        if p[1] == '-' : p[0] = p[2] - p[3]
+    except TypeError:
+        print "Type Error"
+ 
+def p_wae_nop(p):
+    'wae : MINUS wae'
+    p[0] = -p[2]
 
 def p_wae_exit(p):
     'wae : EXIT'
